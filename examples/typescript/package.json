@@ -1,0 +1,12 @@
+{
+  "name": "archivist-api-examples-ts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "quickstart": "tsx quickstart.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}

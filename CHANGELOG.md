@@ -1,0 +1,51 @@
+# Changelog
+
+All notable changes to the Archivist public API are documented here.
+
+This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conventions.
+
+---
+
+## [2026-05-19] — API Reconciliation
+
+A comprehensive cleanup of the public API surface to remove internal artifacts, standardize naming conventions, and fully hydrate summary endpoints.
+
+### Breaking Changes
+
+- **Removed fields from all entity responses**: `approved`, `discovered`, `pending`, `shadow_aliases`, `new_description`, `old_description`, `combined_description`, `context`, `match_info`, `speaker_id`, `dg_request_id`
+- **Removed fields from campaign responses**: `can_manage`, `new`, `archived`, `archived_at`, `bot_active`, `flagged`, `indexed`, `players`, `keywords`, `kill_list`, `chat_tone`, `ai_image_gen`
+- **Renamed `world_id` to `campaign_id`** in journal entry responses, journal folder responses, campaign stats responses, and transcript metadata
+- **Campaign stats response**: `campaignId` (camelCase) renamed to `campaign_id` (snake_case); removed `admins` and `players` count fields
+- **Archived campaigns** are now silently excluded from list endpoints and return 404 on detail
+
+### Added
+
+- `merge` field added to all compendium entity responses (characters, factions, locations, items)
+- `aliases` field added to faction, location, and item summary responses
+- `tcg_image` field added to all compendium entity summary responses
+- `image` field added to moment and session summary responses
+- `index`, `notes`, `pbp_start_msg_url`, `pbp_end_msg_url` added to session summary responses
+- `backstory`, `character_aliases` added to character summary responses
+- `created_at` and `updated_at` timestamps added to all summary responses (previously detail-only)
+- `owner_id` field on campaign responses (replaces internal-only `ownerId`)
+- Structured `SessionHandout` response schema for `GET /v1/sessions/{id}/handout` (previously untyped JSON)
+
+### Changed
+
+- Summary and detail endpoints now return the same fields for all entity properties (summaries are fully hydrated)
+- The only distinction between list and detail for complex entities (quests, sessions) is nested sub-collections (objectives, moments, beats)
+- `GET /v1/sessions/{id}/handout` now validates response through a Pydantic schema
+
+### Naming Convention (standardized)
+
+All foreign key references to campaigns now consistently use `campaign_id` in snake_case across:
+- Compendium entities (characters, factions, locations, items, moments, beats)
+- Game sessions
+- Quests
+- Journal entries (previously `world_id`)
+- Journal folders (previously `world_id`)
+- Campaign stats (previously `campaignId` camelCase)
+- Transcript metadata (previously `world_id`)
+- Entity links
+
+Input schemas continue to accept both `campaign_id` and `world_id` for backward compatibility on request bodies.
