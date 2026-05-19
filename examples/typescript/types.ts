@@ -68,6 +68,7 @@ export interface Character {
   character_name: string;
   character_alias?: string;
   character_aliases: string[];
+  player_handle?: string;
   player_name?: string;
   player?: CharacterPlayer;
   description?: string;
@@ -360,15 +361,15 @@ export interface CastAnalysis {
 
 export interface SessionHandout {
   summary: string;
-  session_outline: string | Array<{ title: string }>;
+  sessionOutline: string | Array<{ title: string }>;
   encounters: Array<{ title: string; bullets: string[] }>;
-  character_spotlight: Array<{ name: string; description: string; bullets: string[] }>;
-  other_entity_spotlight: Array<{ name: string; description: string }>;
+  characterSpotlight: Array<{ name: string; description: string; bullets: string[] }>;
+  otherEntitySpotlight: Array<{ name: string; description: string }>;
   items: Array<{ name: string; description: string }>;
-  valuable_information: Array<{ info: string }>;
-  party_status_and_next_steps: {
-    party_status: { summary: string; bullets: string[] };
-    next_steps: { summary: string };
+  valuableInformation: Array<{ info: string }>;
+  partyStatusAndNextSteps: {
+    partyStatus: { summary: string; bullets: string[] };
+    nextSteps: { summary: string };
   };
   moments: Array<{ label: string; content: string }>;
 }
