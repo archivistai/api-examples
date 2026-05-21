@@ -6,6 +6,19 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ---
 
+## [2026-05-20] — Compendium search and quest counts
+
+### Fixed
+
+- **`search` on compendium list endpoints** now filters results server-side for `GET /v1/locations`, `GET /v1/factions`, and `GET /v1/items` (the query parameter was documented in OpenAPI but previously ignored). Use `search` to find entities by name without paging through the full campaign.
+- **`GET /v1/quests/{quest_id}`** now includes `objective_count` and `completed_objective_count`, matching quest list summaries and MCP client expectations.
+
+### Added
+
+- **`search` on `GET /v1/moments`** — filter moments by label when scoped by `campaign_id` or `session_id`.
+
+---
+
 ## [2026-05-19] — API Reconciliation
 
 A comprehensive cleanup of the public API surface to remove internal artifacts, standardize naming conventions, and fully hydrate summary endpoints.
