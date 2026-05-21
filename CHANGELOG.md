@@ -6,6 +6,16 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ---
 
+## [2026-05-20] — Beat and moment list/detail parity
+
+### Changed
+
+- **`GET /v1/beats` and `GET /v1/beats/{id}`** now return the same beat fields. List responses include `description`, `metadata`, `created_at`, `updated_at`, and `game_session_ids` (not only the previous summary subset).
+- **`GET /v1/moments` and `GET /v1/moments/{id}`** now return the same moment fields. List responses include `categories` (and match detail for `image`, timestamps, etc.).
+- **`with_links`** on beat and moment list endpoints now strips wikilinks from descriptions/content the same way as detail endpoints.
+
+---
+
 ## [2026-05-20] — Compendium search and quest counts
 
 ### Fixed
