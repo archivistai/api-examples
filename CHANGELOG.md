@@ -6,6 +6,19 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ---
 
+## [2026-05-22] — Transcript markdown format and session notes documentation
+
+### Added
+
+- **`format` query parameter on `GET /v1/sessions/{session_id}/transcript`**: Accepts `json` (default) or `markdown`. When `format=markdown`, the endpoint returns a plain-text markdown document (`Content-Type: text/markdown`) with metadata, statistics, and speaker-labeled utterances. This format is optimised for LLM agent consumption.
+
+### Clarified
+
+- **`notes` on game session responses**: The `notes` field is `null` for all session types except `rawNotes`. Raw-notes sessions (`type: "rawNotes"`) are a special case where users supply session notes directly instead of uploading audio or text. These sessions contain notes but do not have any transcript content.
+- **Enum values in documentation**: All enum parameters now list exact accepted values instead of abbreviated examples. `session_type` accepts `discordVoice`, `rawNotes`, `txtUpload`, or `playByPost`. `character_type` accepts `PC` or `NPC`. Link `from_type` and `to_type` parameters list all valid entity types.
+
+---
+
 ## [2026-05-20] — Beat and moment list/detail parity
 
 ### Changed

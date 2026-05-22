@@ -2,7 +2,7 @@
  * Archivist API Response Types
  *
  * Importable TypeScript definitions for all public API response shapes.
- * These match the API as of 2026-05-19.
+ * These match the API as of 2026-05-22.
  */
 
 export type ID = string;
@@ -99,6 +99,10 @@ export interface GameSession {
   title: string;
   type: GameSessionType;
   summary?: string;
+  /**
+   * User-supplied session notes. This is `null` for all session types except
+   * `rawNotes`. Raw-notes sessions contain notes but have no transcript content.
+   */
   notes?: string;
   session_date: ISODate;
   image?: string;
@@ -254,6 +258,9 @@ export interface Quest {
   failure_conditions?: string;
   next_action?: string;
   resolution?: string;
+  objective_count: number;
+  completed_objective_count: number;
+  progress_entry_count: number;
   objectives: QuestObjective[];
   progress_log: string[];
   progress_log_entries: QuestProgressEntry[];
@@ -372,6 +379,47 @@ export interface SessionHandout {
     nextSteps: { summary: string };
   };
   moments: Array<{ label: string; content: string }>;
+}
+
+export interface TranscriptUtterance {
+  speaker_label: string;
+  transcript: string;
+  start: number;
+  end: number;
+  said_at?: string;
+}
+
+export interface TranscriptStats {
+  char_count: number;
+  tokens: number;
+  utterance_count: number;
+}
+
+export interface TranscriptMetadata {
+  session_id: ID;
+  session_type?: string;
+  campaign_id?: ID;
+  world_title?: string;
+  world_language?: string;
+  session_date?: ISODate;
+  speakers?: string[];
+  speaker_count?: number;
+  source_type?: string;
+  created_at?: ISODate;
+}
+
+/**
+ * JSON response shape for `GET /v1/sessions/{id}/transcript`.
+ * Use `?format=markdown` to receive a plain-text markdown document instead
+ * (returned with `Content-Type: text/markdown`).
+ */
+export interface Transcript {
+  version: number;
+  created_at: ISODate;
+  metadata: TranscriptMetadata;
+  utterances: TranscriptUtterance[];
+  text: string;
+  stats: TranscriptStats;
 }
 
 // ---------------------------------------------------------------------------
