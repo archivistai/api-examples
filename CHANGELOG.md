@@ -6,6 +6,15 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ---
 
+## [2026-05-25] — Citations in non-streaming ask responses
+
+### Added
+
+- **`citations` array on `POST /v1/ask` non-streaming responses**: The response now includes a `citations` array containing references to the campaign data used to generate the answer. Each citation includes `citation_id`, `source_type`, `source_id`, `title`, `session_number`, and `excerpt`.
+- **Updated `ask.py` example**: Non-streaming example now prints citations when present.
+
+---
+
 ## [2026-05-22] — Transcript markdown format and session notes documentation
 
 ### Added

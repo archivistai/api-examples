@@ -22,7 +22,18 @@ def ask_question(campaign_id: str, question: str):
     data = resp.json()
 
     print(f"Q: {question}")
-    print(f"A: {data['answer']}\n")
+    print(f"A: {data['answer']}")
+
+    citations = data.get("citations", [])
+    if citations:
+        print(f"\nCitations ({len(citations)}):")
+        for c in citations:
+            label = c.get("title") or c.get("source_type", "unknown")
+            if c.get("session_number"):
+                label += f" (Session {c['session_number']})"
+            print(f"  - [{c.get('citation_id')}] {label}")
+    print()
+
     return data
 
 
