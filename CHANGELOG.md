@@ -6,6 +6,14 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ---
 
+## [2026-05-29] — Session detail wikilink parity for nested beats and moments
+
+### Fixed
+
+- **`with_links` on `GET /v1/sessions/{session_id}`** now strips wikilinks from nested beat `description` and moment `content` fields when `include_beats=true` or `include_moments=true`, matching the dedicated beats and moments endpoints. Previously only the session `summary` respected `with_links`; nested collections always returned raw `[[wikilinks]]` from the database.
+
+---
+
 ## [2026-05-25] — Citations in non-streaming ask responses
 
 ### Added
