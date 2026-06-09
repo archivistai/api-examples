@@ -2,7 +2,7 @@
  * Archivist API Response Types
  *
  * Importable TypeScript definitions for all public API response shapes.
- * These match the API as of 2026-05-22.
+ * These match the API as of 2026-06-08.
  */
 
 export type ID = string;
@@ -81,6 +81,13 @@ export interface Character {
   updated_at?: ISODate;
 }
 
+export interface CharacterCard {
+  id: ID;
+  character_name: string;
+  type: string;
+  image?: string;
+}
+
 // ---------------------------------------------------------------------------
 // Game Session
 // ---------------------------------------------------------------------------
@@ -140,6 +147,10 @@ export interface Beat {
   updated_at?: ISODate;
 }
 
+export interface BeatHierarchyRead extends Beat {
+  children: BeatHierarchyRead[];
+}
+
 // ---------------------------------------------------------------------------
 // Moment
 // ---------------------------------------------------------------------------
@@ -155,6 +166,15 @@ export interface Moment {
   categories?: string[];
   created_at: ISODate;
   updated_at?: ISODate;
+}
+
+export interface MomentCard {
+  id: ID;
+  label?: string;
+  image?: string;
+  session_id: ID;
+  created_at: ISODate;
+  categories: string[];
 }
 
 // ---------------------------------------------------------------------------
@@ -326,6 +346,14 @@ export interface JournalEntry {
   updated_at?: ISODate;
 }
 
+export interface JournalCard {
+  id: ID;
+  title: string;
+  summary?: string;
+  updated_at?: ISODate;
+  folder_id?: ID;
+}
+
 export interface JournalFolder {
   id: ID;
   campaign_id: ID;
@@ -337,6 +365,25 @@ export interface JournalFolder {
   metadata?: Record<string, unknown>;
   created_at: ISODate;
   updated_at?: ISODate;
+}
+
+// ---------------------------------------------------------------------------
+// Unified Entity Picker
+// ---------------------------------------------------------------------------
+
+export interface EntityCard {
+  id: ID;
+  name: string;
+  type?: string;
+  image?: string;
+}
+
+export interface EntitiesListResponse {
+  results: EntityCard[];
+  hasMore: boolean;
+  page: number;
+  pages: number;
+  total: number;
 }
 
 // ---------------------------------------------------------------------------

@@ -14,6 +14,9 @@ def paginate(endpoint: str, params: dict = None, page_size: int = 50) -> Generat
     Iterate through all pages of a paginated endpoint.
 
     Yields individual items from each page.
+
+    Note: GET /v1/entities uses a different envelope (results/hasMore/limit).
+    Use paginate_entities() for that endpoint.
     """
     params = dict(params or {})
     params["size"] = page_size
@@ -43,6 +46,29 @@ def get_all_moments(campaign_id: str) -> list[dict]:
     """Fetch every moment in a campaign across all pages."""
     moments = list(paginate("/v1/moments", params={"campaign_id": campaign_id}))
     return moments
+
+
+def paginate_entities(campaign_id: str, entity_type: str, page_size: int = 50) -> Generator[dict, None, None]:
+    """Iterate GET /v1/entities (uses limit and results/hasMore envelope)."""
+    page = 1
+    while True:
+        resp = requests.get(
+            f"{BASE_URL}/v1/entities",
+            headers=HEADERS,
+            params={"campaign_id": campaign_id, "type": entity_type, "page": page, "limit": page_size},
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        for item in data["results"]:
+            yield item
+        if not data["hasMore"]:
+            break
+        page += 1
+
+
+def get_all_journals(campaign_id: str) -> list[dict]:
+    """Fetch every journal entry in a campaign across all pages."""
+    return list(paginate("/v1/journals", params={"campaign_id": campaign_id}))
 
 
 if __name__ == "__main__":

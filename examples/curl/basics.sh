@@ -32,6 +32,22 @@ curl -s -H "x-api-key: $KEY" "$API/v1/sessions?campaign_id=$CAMPAIGN_ID&size=5" 
 echo -e "\n=== List Beats ==="
 curl -s -H "x-api-key: $KEY" "$API/v1/beats?campaign_id=$CAMPAIGN_ID&size=5" | jq '.data[] | {id, label, type, index}'
 
+echo -e "\n=== Session Beats (flat list) ==="
+SESSION_ID=$(curl -s -H "x-api-key: $KEY" "$API/v1/sessions?campaign_id=$CAMPAIGN_ID&size=1" | jq -r '.data[0].id')
+curl -s -H "x-api-key: $KEY" "$API/v1/beats?session_id=$SESSION_ID&size=5" | jq '.data[] | {label, type, index}'
+
+echo -e "\n=== Session Beat Hierarchy ==="
+curl -s -H "x-api-key: $KEY" "$API/v1/beats?session_id=$SESSION_ID&include_hierarchy=true" | jq '.[] | {label, type, child_count: (.children | length)}'
+
+echo -e "\n=== Entity Picker (characters) ==="
+curl -s -H "x-api-key: $KEY" "$API/v1/entities?campaign_id=$CAMPAIGN_ID&type=characters&limit=5" | jq .
+
+echo -e "\n=== Moments with fields=card ==="
+curl -s -H "x-api-key: $KEY" "$API/v1/moments?campaign_id=$CAMPAIGN_ID&fields=card&size=3" | jq '.data[] | {id, label, session_id}'
+
+echo -e "\n=== Journals (paginated) ==="
+curl -s -H "x-api-key: $KEY" "$API/v1/journals?campaign_id=$CAMPAIGN_ID&page=1&size=5" | jq '{total, page, size, pages, count: (.data | length)}'
+
 echo -e "\n=== List Moments ==="
 curl -s -H "x-api-key: $KEY" "$API/v1/moments?campaign_id=$CAMPAIGN_ID&size=5" | jq '.data[] | {id, label, session_id}'
 

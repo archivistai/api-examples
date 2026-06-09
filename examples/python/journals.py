@@ -8,21 +8,37 @@ API_KEY = os.environ["ARCHIVIST_API_KEY"]
 HEADERS = {"x-api-key": API_KEY, "Content-Type": "application/json"}
 
 
-def list_journal_entries(campaign_id: str):
-    """List journal entries in a campaign (content excluded from list)."""
+def list_journal_entries(campaign_id: str, page: int = 1, size: int = 20, fields: str | None = None):
+    """List journal entries with pagination. Use fields='card' for lightweight previews."""
+    params = {"campaign_id": campaign_id, "page": page, "size": size}
+    if fields:
+        params["fields"] = fields
     resp = requests.get(
         f"{BASE_URL}/v1/journals",
         headers=HEADERS,
-        params={"campaign_id": campaign_id},
+        params=params,
     )
     resp.raise_for_status()
     data = resp.json()
 
-    print(f"Journal entries ({data['total']} total):\n")
+    print(f"Journal entries ({data['total']} total, page {data['page']}/{data['pages']}):\n")
     for entry in data["data"]:
         status_badge = f"[{entry.get('status', 'draft')}]"
         print(f"  {status_badge} {entry['title']} (tokens: {entry.get('token_count', 0)})")
 
+    return data["data"]
+
+
+def list_journal_cards(campaign_id: str, page: int = 1, size: int = 20):
+    """List journal entries using fields=card for picker-style previews."""
+    params = {"campaign_id": campaign_id, "page": page, "size": size, "fields": "card"}
+    resp = requests.get(f"{BASE_URL}/v1/journals", headers=HEADERS, params=params)
+    resp.raise_for_status()
+    data = resp.json()
+
+    print(f"Journal cards ({data['total']} total, page {data['page']}/{data['pages']}):\n")
+    for entry in data["data"]:
+        print(f"  {entry['title']}")
     return data["data"]
 
 

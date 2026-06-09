@@ -6,6 +6,47 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ---
 
+## [2026-06-09] — Session beat list modes and developer session writes
+
+### Added
+
+- **`GET /v1/beats?session_id={id}`** — Returns a paginated flat list of beats linked to the session (standard `{ data, total, page, size, pages }` envelope). Use `include_hierarchy=true` for the nested tree response instead.
+
+### Fixed
+
+- **Developer session writes** — `POST`, `PATCH`, `PUT`, and `DELETE /v1/sessions` remain available to campaign owners using API keys (developer view). Session create/update/delete were briefly gated to product OAuth only during staging; that restriction was removed.
+
+### Changed
+
+- **Updated examples**: `beats.py` and `basics.sh` now demonstrate both flat session beat lists and hierarchy mode.
+
+---
+
+## [2026-06-09] — Full-text search for compendium and journal lookups
+
+### Changed
+
+- **Compendium `search` parameters** (`GET /v1/characters`, `/factions`, `/locations`, `/items`, and `GET /v1/entities`) now use Postgres `searchVector` full-text search (aliases, player names, tags, and related indexed fields) with ILIKE fallback when FTS returns no matches.
+- **`GET /v1/campaigns/{id}/search`** — Characters, factions, locations, items, and journals now use the same FTS strategy. Sessions and quests remain substring-based.
+
+---
+
+## [2026-06-08] — Beat hierarchy, unified entities list, moment filters, and card fieldsets
+
+### Added
+
+- **`GET /v1/beats?session_id={id}&include_hierarchy=true`** — Returns the session's beat tree as a nested JSON array. Each node includes a `children` array (not paginated). Use with `with_links=true` to preserve `[[wikilinks]]` in descriptions.
+- **`GET /v1/entities`** — Unified compendium picker endpoint. Required query params: `campaign_id`, `type` (`characters`, `factions`, `locations`, or `items`). Optional: `search`, `page`, `limit` (max 100). Response envelope: `{ results, hasMore, page, pages, total }` where each result includes `id`, `name`, `type`, and `image`.
+- **Entity and session filters on `GET /v1/moments`** — Filter by linked entities using comma-separated `character_ids`, `location_ids`, `faction_ids`, `item_ids`, and/or `session_ids` (in addition to existing `search`). Available in both developer and product API views.
+- **`fields=card` on list endpoints** — Pass `fields=card` on `GET /v1/characters`, `GET /v1/moments`, and `GET /v1/journals` for lightweight list items suited to pickers and feeds.
+- **Updated examples**: Added `beats.py`, `entities.py`, and `moments.py`; extended `journals.py`, `pagination.py`, `basics.sh`, and `types.ts`.
+
+### Changed
+
+- **`GET /v1/journals`** — List responses now use the standard paginated envelope `{ data, total, page, size, pages }` with explicit `page` and `size` query parameters (defaults: page 1, size 20).
+
+---
+
 ## [2026-05-29] — Session detail wikilink parity for nested beats and moments
 
 ### Fixed
