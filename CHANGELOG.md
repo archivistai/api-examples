@@ -15,11 +15,13 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - **`POST /v1/campaigns/{campaign_id}/images/init`** — Step 1 of direct upload: reserve an object key and receive a presigned PUT URL for the client to upload image bytes.
 - **`POST /v1/campaigns/{campaign_id}/images/complete`** — Step 2 of direct upload: validate the uploaded object, run moderation, and optionally attach the image to an entity.
 - **`DELETE /v1/campaigns/{campaign_id}/images`** — Detach and delete an entity image, or delete a managed object by URL.
-- **MCP v2 write tools** — The Archivist MCP server now exposes create/update/delete tools for campaigns, sessions, beats, moments, compendium entities, quests, journals, journal folders, and entity links, plus five image tools (`get_image_usage`, `generate_image`, `init_image_upload`, `complete_image_upload`, `delete_entity_image`). OAuth clients require the `agent_write` scope for mutating tools. See the [MCP tool reference](https://github.com/Archivist-AI/agent-examples/blob/main/docs/mcp-tool-reference.md) and [server README](https://github.com/Astrotomic/mcp.myarchivist.ai).
+- **MCP v2 write tools** — The Archivist MCP server now exposes create/update/delete tools for campaigns, beats, moments, compendium entities, quests, journals, journal folders, and entity links, plus session metadata updates (`patch_session`, `update_session` — not create/delete), and five image tools (`get_image_usage`, `generate_image`, `init_image_upload`, `complete_image_upload`, `delete_entity_image`). OAuth clients require the `agent_write` scope for mutating tools. See the [MCP tool reference](https://github.com/Archivist-AI/agent-examples/blob/main/docs/mcp-tool-reference.md) and [server README](https://github.com/Astrotomic/mcp.myarchivist.ai).
 
 ### Changed
 
 - **Read tools with `with_links`** — MCP get/list tools for characters, factions, locations, items, beats, moments, sessions, and journals accept an optional `with_links` parameter. Pass `true` before editing text fields that contain `[[wikilink]]` markup.
+- **Session create/delete restricted to product API** — `POST` and `DELETE /v1/sessions` now require a registered product OAuth client with `product_write`. Developer API keys and agent OAuth clients receive `403`. Developer and MCP clients may still read sessions and patch/update metadata (`PATCH`/`PUT /v1/sessions/{id}`).
+- **MCP: removed `create_session`** — Session creation is not exposed as an MCP tool; use first-party product clients to create sessions.
 - **Updated examples**: Added `images.py` demonstrating quota check, AI generation, and the two-step upload flow.
 
 ### Notes
@@ -51,7 +53,7 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Fixed
 
-- **Developer session writes** — `POST`, `PATCH`, `PUT`, and `DELETE /v1/sessions` remain available to campaign owners using API keys (developer view). Session create/update/delete were briefly gated to product OAuth only during staging; that restriction was removed.
+- **Developer session writes** — `POST`, `PATCH`, `PUT`, and `DELETE /v1/sessions` remain available to campaign owners using API keys (developer view). Session create/update/delete were briefly gated to product OAuth only during staging; that restriction was removed. *(Superseded 2026-07-05: `POST` and `DELETE /v1/sessions` are product-only again; developer and MCP clients retain read plus `PATCH`/`PUT`.)*
 
 ### Changed
 

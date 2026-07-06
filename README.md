@@ -57,6 +57,8 @@ Use `page` and `limit` (not `size`) to paginate. Each result includes `id`, `nam
 
 **Session beats** — `GET /v1/beats?session_id={id}` returns a paginated flat list of beats linked to that session. Add `include_hierarchy=true` for a nested JSON array (not paginated); each node includes a `children` array.
 
+**Sessions** — Game sessions are system-managed on the developer API. Use `GET /v1/sessions` to list and `PATCH /v1/sessions/{id}` to update title, summary, or session_date. There is no `POST` or `DELETE /v1/sessions` for API keys or agent OAuth; session create/delete is reserved for first-party product clients.
+
 **`fields=card`** on `GET /v1/characters`, `GET /v1/moments`, and `GET /v1/journals` returns lightweight list items for pickers and feeds instead of full summaries.
 
 ## Resources
