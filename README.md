@@ -24,6 +24,7 @@ Code examples and usage patterns for the [Archivist AI](https://myarchivist.ai) 
 | [journals.py](examples/python/journals.py) | Python | List journal entries with pagination and fields=card |
 | [ask.py](examples/python/ask.py) | Python | RAG chat over campaign knowledge |
 | [pagination.py](examples/python/pagination.py) | Python | Iterate standard and entities list envelopes |
+| [images.py](examples/python/images.py) | Python | Image quota, AI generation, and direct upload init |
 | [error_handling.py](examples/python/error_handling.py) | Python | Retry logic, rate limits, error parsing |
 | [types.ts](examples/typescript/types.ts) | TypeScript | Importable response type definitions |
 | [curl/basics.sh](examples/curl/basics.sh) | cURL | Common operations as shell commands |

@@ -6,6 +6,43 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ---
 
+## [2026-07-05] — Entity images API and MCP v2 write tools
+
+### Added
+
+- **`GET /v1/images/usage?campaign_id={id}`** — Returns the account's image quota for a campaign (`used`, `limit`, `can_access`, `tier`, billing cycle window). Requires campaign read access.
+- **`POST /v1/images/generate`** — Server-side AI image generation for `character`, `faction`, `location`, `item`, or `world`. Returns a public URL; does not auto-attach to the entity. Consumes quota and requires campaign manage access.
+- **`POST /v1/campaigns/{campaign_id}/images/init`** — Step 1 of direct upload: reserve an object key and receive a presigned PUT URL for the client to upload image bytes.
+- **`POST /v1/campaigns/{campaign_id}/images/complete`** — Step 2 of direct upload: validate the uploaded object, run moderation, and optionally attach the image to an entity.
+- **`DELETE /v1/campaigns/{campaign_id}/images`** — Detach and delete an entity image, or delete a managed object by URL.
+- **MCP v2 write tools** — The Archivist MCP server now exposes create/update/delete tools for campaigns, sessions, beats, moments, compendium entities, quests, journals, journal folders, and entity links, plus five image tools (`get_image_usage`, `generate_image`, `init_image_upload`, `complete_image_upload`, `delete_entity_image`). OAuth clients require the `agent_write` scope for mutating tools. See the [MCP tool reference](https://github.com/Archivist-AI/agent-examples/blob/main/docs/mcp-tool-reference.md) and [server README](https://github.com/Astrotomic/mcp.myarchivist.ai).
+
+### Changed
+
+- **Read tools with `with_links`** — MCP get/list tools for characters, factions, locations, items, beats, moments, sessions, and journals accept an optional `with_links` parameter. Pass `true` before editing text fields that contain `[[wikilink]]` markup.
+- **Updated examples**: Added `images.py` demonstrating quota check, AI generation, and the two-step upload flow.
+
+### Notes
+
+- Image routes are available on the developer API surface (API keys and agent OAuth). Supported entity types for upload/attach: campaign, character, faction, location, item, moment, and session.
+- Direct upload requires a client-side HTTP PUT to the presigned URL between `init` and `complete`; MCP agents that cannot make arbitrary PUTs should prefer `generate_image` or delegate the upload step.
+- Additional read routes reserved for first-party product OAuth clients are not part of the developer API contract and are intentionally omitted from this changelog.
+
+---
+
+## [2026-06-09] — Remove legacy `/v1/worlds` routes
+
+### Removed
+
+- **`/v1/worlds`** — All legacy world routes were removed. Campaigns are the sole public API surface for the `World` table. Use **`POST /v1/campaigns`** to create campaigns and **`/v1/campaigns/{campaign_id}`** for all other campaign operations.
+
+### Notes
+
+- Request bodies may still accept `worldId` as an alias for `campaign_id` on some endpoints for backward compatibility.
+- OAuth scope `worlds_read` is unchanged; it grants read access to campaigns, not a separate `/v1/worlds` route.
+
+---
+
 ## [2026-06-09] — Session beat list modes and developer session writes
 
 ### Added
