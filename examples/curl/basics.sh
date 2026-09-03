@@ -23,6 +23,12 @@ echo "Campaign ID: $CAMPAIGN_ID"
 echo -e "\n=== Campaign Stats ==="
 curl -s -H "x-api-key: $KEY" "$API/v1/campaigns/$CAMPAIGN_ID/stats" | jq .
 
+echo -e "\n=== Campaign Search ==="
+curl -s -H "x-api-key: $KEY" "$API/v1/campaigns/$CAMPAIGN_ID/search?q=the&types=characters,locations,quests" | jq '{characters: (.characters|length), locations: (.locations|length), quests: (.quests|length)}'
+
+echo -e "\n=== Ask Quota ==="
+curl -s -H "x-api-key: $KEY" "$API/v1/ask/quota?campaign_id=$CAMPAIGN_ID" | jq .
+
 echo -e "\n=== List Characters ==="
 curl -s -H "x-api-key: $KEY" "$API/v1/characters?campaign_id=$CAMPAIGN_ID&size=5" | jq '.data[] | {id, character_name, type}'
 

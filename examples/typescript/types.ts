@@ -2,7 +2,7 @@
  * Archivist API Response Types
  *
  * Importable TypeScript definitions for all public API response shapes.
- * These match the API as of 2026-06-08.
+ * These match the API as of 2026-09-02.
  */
 
 export type ID = string;
@@ -147,8 +147,16 @@ export interface Beat {
   updated_at?: ISODate;
 }
 
+export interface BeatLinkedEntities {
+  characters: ID[];
+  factions: ID[];
+  locations: ID[];
+  items: ID[];
+}
+
 export interface BeatHierarchyRead extends Beat {
   children: BeatHierarchyRead[];
+  linkedEntities: BeatLinkedEntities;
 }
 
 // ---------------------------------------------------------------------------
@@ -409,6 +417,9 @@ export interface CastAnalysis {
   id: ID;
   session_id: ID;
   analysis: Record<string, unknown>;
+  /** Set when a rendered PDF has been persisted; null until then. */
+  pdfPageCount?: number | null;
+  pdfSavedAt?: ISODate | null;
   created_at: ISODate;
   updated_at?: ISODate;
 }
@@ -426,6 +437,8 @@ export interface SessionHandout {
     nextSteps: { summary: string };
   };
   moments: Array<{ label: string; content: string }>;
+  pdfPageCount?: number | null;
+  pdfSavedAt?: ISODate | null;
 }
 
 export interface TranscriptUtterance {
@@ -479,8 +492,41 @@ export interface AskRequest {
   stream?: boolean;
 }
 
+export interface AskCitation {
+  citation_id: string;
+  source_type: string;
+  source_id?: ID;
+  title?: string;
+  session_number?: number;
+  excerpt?: string;
+}
+
+/** Ask quota and non-streaming Ask responses use camelCase keys. */
+export interface AskQuota {
+  monthlyTokensRemaining: number;
+  hourlyTokensRemaining: number;
+  launchPromoActive: boolean;
+}
+
 export interface AskResponse {
   answer: string;
-  monthly_tokens_remaining?: number;
-  hourly_tokens_remaining?: number;
+  citations: AskCitation[];
+  monthlyTokensRemaining: number;
+  hourlyTokensRemaining: number;
+}
+
+export interface CampaignSearchHit {
+  id: ID;
+  image?: string | null;
+}
+
+export interface CampaignSearchResponse {
+  characters: Array<CampaignSearchHit & { characterName: string; type?: string }>;
+  factions: Array<CampaignSearchHit & { name: string; type?: string }>;
+  locations: Array<CampaignSearchHit & { name: string; type?: string }>;
+  items: Array<CampaignSearchHit & { name: string; type?: string }>;
+  sessions: Array<CampaignSearchHit & { title: string; session_number?: number }>;
+  recaps: Array<CampaignSearchHit & { title: string; session_number?: number; summary?: string }>;
+  quests: Array<{ id: ID; questName: string; status?: string | null }>;
+  journals: Array<CampaignSearchHit & { title: string }>;
 }

@@ -22,7 +22,8 @@ Code examples and usage patterns for the [Archivist AI](https://myarchivist.ai) 
 | [entities.py](examples/python/entities.py) | Python | Unified compendium entity picker |
 | [moments.py](examples/python/moments.py) | Python | Moment list filters and fields=card |
 | [journals.py](examples/python/journals.py) | Python | List journal entries with pagination and fields=card |
-| [ask.py](examples/python/ask.py) | Python | RAG chat over campaign knowledge |
+| [ask.py](examples/python/ask.py) | Python | Ask quota plus RAG chat over campaign knowledge |
+| [search.py](examples/python/search.py) | Python | Unified campaign search (`GET /v1/campaigns/{id}/search`) |
 | [pagination.py](examples/python/pagination.py) | Python | Iterate standard and entities list envelopes |
 | [images.py](examples/python/images.py) | Python | Image quota, AI generation, and direct upload init |
 | [error_handling.py](examples/python/error_handling.py) | Python | Retry logic, rate limits, error parsing |
@@ -55,9 +56,11 @@ Use `page` and `size` query parameters to paginate. Examples: `/v1/characters`, 
 
 Use `page` and `limit` (not `size`) to paginate. Each result includes `id`, `name`, `type`, and `image`.
 
-**Session beats** — `GET /v1/beats?session_id={id}` returns a paginated flat list of beats linked to that session. Add `include_hierarchy=true` for a nested JSON array (not paginated); each node includes a `children` array.
+**Session beats** — `GET /v1/beats?session_id={id}` returns a paginated flat list of beats linked to that session. Add `include_hierarchy=true` for a nested JSON array (not paginated); each node includes a `children` array and `linkedEntities` ID lists.
 
-**Sessions** — Game sessions are system-managed on the developer API. Use `GET /v1/sessions` to list and `PATCH /v1/sessions/{id}` to update title, summary, or session_date. There is no `POST` or `DELETE /v1/sessions` for API keys or agent OAuth; session create/delete is reserved for first-party product clients.
+**Sessions** — Game sessions are system-managed on the developer API. Use `GET /v1/sessions` to list and `PATCH` or `PUT /v1/sessions/{id}` to update metadata (`title`, `summary`, `session_date`, `image`). There is no `POST` or `DELETE /v1/sessions` for API keys or agent OAuth; session create/delete is reserved for first-party product clients.
+
+**Campaign search** — `GET /v1/campaigns/{id}/search?q=` returns grouped hits (max 10 per type). Optional `types` is a comma list of `characters`, `factions`, `locations`, `items`, `sessions`, `recaps`, `quests`, `journals`.
 
 **`fields=card`** on `GET /v1/characters`, `GET /v1/moments`, and `GET /v1/journals` returns lightweight list items for pickers and feeds instead of full summaries.
 

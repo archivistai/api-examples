@@ -9,6 +9,17 @@ API_KEY = os.environ["ARCHIVIST_API_KEY"]
 HEADERS = {"x-api-key": API_KEY, "Content-Type": "application/json"}
 
 
+def get_ask_quota(campaign_id: str):
+    """Remaining Ask tokens for a campaign."""
+    resp = requests.get(
+        f"{BASE_URL}/v1/ask/quota",
+        headers={"x-api-key": API_KEY},
+        params={"campaign_id": campaign_id},
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+
 def ask_question(campaign_id: str, question: str):
     """Ask a question about your campaign using RAG."""
     payload = {
@@ -32,6 +43,11 @@ def ask_question(campaign_id: str, question: str):
             if c.get("session_number"):
                 label += f" (Session {c['session_number']})"
             print(f"  - [{c.get('citation_id')}] {label}")
+
+    monthly = data.get("monthlyTokensRemaining")
+    hourly = data.get("hourlyTokensRemaining")
+    if monthly is not None or hourly is not None:
+        print(f"Tokens remaining — monthly: {monthly}, hourly: {hourly}")
     print()
 
     return data
@@ -77,6 +93,14 @@ if __name__ == "__main__":
     if not campaign_id:
         print("Set ARCHIVIST_CAMPAIGN_ID to run this example")
         exit(1)
+
+    quota = get_ask_quota(campaign_id)
+    print(
+        "Ask quota — "
+        f"monthly: {quota.get('monthlyTokensRemaining')}, "
+        f"hourly: {quota.get('hourlyTokensRemaining')}, "
+        f"promo: {quota.get('launchPromoActive')}\n"
+    )
 
     ask_question(campaign_id, "Who are the main characters in this campaign?")
     ask_question(campaign_id, "What happened in the last session?")
