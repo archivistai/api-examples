@@ -6,6 +6,30 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ---
 
+## [2026-09-02] — Ask quota, campaign search docs, session PUT, beat links, saved PDFs
+
+### Added
+
+- **`GET /v1/ask/quota?campaign_id={id}`** — Returns `monthlyTokensRemaining`, `hourlyTokensRemaining`, and `launchPromoActive`. When the promo flag is `true` the monthly counter is not enforced; the hourly counter is always enforced. The same counters appear on non-streaming `POST /v1/ask` responses and as `X-Monthly-Remaining-Tokens` / `X-Hourly-Remaining-Tokens` headers on streaming responses.
+- **`GET /v1/campaigns/{id}/search`** — Documented on the public reference. Unified lookup across characters, factions, locations, items, sessions, recaps, quests, and journals (`q` required; optional comma-separated `types`). Max 10 hits per type. Compendium and journals use FTS with ILIKE fallback; sessions, recaps, and quests use substring matching.
+- **`linkedEntities` on beat hierarchy** — `GET /v1/beats?session_id={id}&include_hierarchy=true` nodes now include `{ characters, factions, locations, items }` ID arrays for entities tagged on that beat.
+- **Saved-PDF timestamps** — `GET /v1/sessions/{id}/handout` and `GET /v1/sessions/{id}/cast-analysis` include `pdfSavedAt` and `pdfPageCount` when a rendered PDF has been persisted. Both are `null` until then.
+
+### Changed
+
+- **`PUT /v1/sessions/{id}`** — Documented as part of the developer contract (same access as `PATCH`). Session create/delete remain product-only.
+- **`PATCH /v1/sessions/{id}`** — Accepts `image` (HTTPS URL) in addition to `title`, `summary`, and `session_date`.
+- **`session_type` filter** — Accepted values are `audioUpload`, `playByPost`, `discordVoice`, `txtUpload`, `rawNotes`, and `other`.
+- **Image `complete` is idempotent** — Retrying `POST /v1/campaigns/{id}/images/complete` with the same `object_key` after a successful upload does not re-moderate or consume extra quota.
+- **MCP `ask_campaign`** — Listed on the MCP docs and `llms.txt` (already counted in the 29 read tools).
+- **Updated examples**: `ask.py` prints quota; added `search.py`; `basics.sh` covers search and Ask quota; `types.ts` refreshed.
+
+### Fixed
+
+- **MCP image tools (correction)** — The 2026-07-05 entry listed `generate_image` as an MCP tool. AI generation is REST-only (`POST /v1/images/generate`). MCP exposes `get_image_usage`, `init_image_upload`, `complete_image_upload`, and `delete_entity_image`.
+
+---
+
 ## [2026-07-05] — Entity images API and MCP v2 write tools
 
 ### Added
@@ -15,7 +39,7 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - **`POST /v1/campaigns/{campaign_id}/images/init`** — Step 1 of direct upload: reserve an object key and receive a presigned PUT URL for the client to upload image bytes.
 - **`POST /v1/campaigns/{campaign_id}/images/complete`** — Step 2 of direct upload: validate the uploaded object, run moderation, and optionally attach the image to an entity.
 - **`DELETE /v1/campaigns/{campaign_id}/images`** — Detach and delete an entity image, or delete a managed object by URL.
-- **MCP v2 write tools** — The Archivist MCP server now exposes create/update/delete tools for campaigns, beats, moments, compendium entities, quests, journals, journal folders, and entity links, plus session metadata updates (`patch_session`, `update_session` — not create/delete), and five image tools (`get_image_usage`, `generate_image`, `init_image_upload`, `complete_image_upload`, `delete_entity_image`). OAuth clients require the `agent_write` scope for mutating tools. See the [MCP tool reference](https://github.com/Archivist-AI/agent-examples/blob/main/docs/mcp-tool-reference.md) and [server README](https://github.com/Astrotomic/mcp.myarchivist.ai).
+- **MCP v2 write tools** — The Archivist MCP server now exposes create/update/delete tools for campaigns, beats, moments, compendium entities, quests, journals, journal folders, and entity links, plus session metadata updates (`patch_session`, `update_session` — not create/delete), and four image tools (`get_image_usage`, `init_image_upload`, `complete_image_upload`, `delete_entity_image`). AI generation is REST-only (`POST /v1/images/generate`); there is no `generate_image` MCP tool. *(Corrected 2026-09-02.)* OAuth clients require the `agent_write` scope for mutating tools. See the [MCP tool reference](https://github.com/Archivist-AI/agent-examples/blob/main/docs/mcp-tool-reference.md) and [server README](https://github.com/Astrotomic/mcp.myarchivist.ai).
 
 ### Changed
 
