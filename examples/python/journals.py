@@ -76,6 +76,48 @@ def create_journal_entry(campaign_id: str):
     return result
 
 
+def get_journal_markdown(entry_id: str):
+    """Get a journal entry's content as Markdown (format=markdown).
+
+    Headings, lists, code, diagrams and tables come back as Markdown instead of flattened text.
+    Tables are GFM pipe tables, so the result can be sent back with content_format="markdown".
+    """
+    resp = requests.get(
+        f"{BASE_URL}/v1/journals/{entry_id}",
+        headers=HEADERS,
+        params={"format": "markdown"},
+    )
+    resp.raise_for_status()
+    return resp.json()["content"]
+
+
+def create_markdown_journal_entry(campaign_id: str):
+    """Create a journal entry from Markdown (content_format="markdown")."""
+    content = """# Session 12 recap
+
+| NPC | Attitude |
+| --- | ---: |
+| Mira | friendly |
+
+```mermaid
+graph TD
+  Thornwall --> Harbor
+```
+"""
+    payload = {
+        "world_id": campaign_id,
+        "title": "Session 12 recap (Markdown)",
+        "content": content,
+        "content_format": "markdown",  # default is "plain"
+        "status": "draft",
+    }
+    resp = requests.post(f"{BASE_URL}/v1/journals", headers=HEADERS, json=payload)
+    resp.raise_for_status()
+    result = resp.json()
+    print(f"\nCreated Markdown journal entry: {result['id']}")
+    return result
+
+
 def list_journal_folders(campaign_id: str):
     """List journal folders for organizing entries."""
     resp = requests.get(

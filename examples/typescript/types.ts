@@ -330,6 +330,9 @@ export interface QuestSummary {
 
 export type JournalStatus = "draft" | "published" | "archived";
 
+/** Write-side `content_format`: "markdown" converts `content` to rich content (default "plain"). */
+export type JournalContentFormat = "plain" | "markdown";
+
 export interface JournalEntry {
   id: ID;
   campaign_id: ID;

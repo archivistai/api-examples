@@ -6,6 +6,20 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ---
 
+## [2026-10-31] — Markdown content for journal entries
+
+### Added
+
+- **`content_format` on `POST /v1/journals` and `PUT /v1/journals`** — Pass `"markdown"` (default `"plain"`) to have `content` converted to rich content like pasting Markdown into the journal editor: headings, pipe tables with column alignment, fenced code, ```` ```mermaid ```` diagrams (rendered in the app), bold/italic/strikethrough, inline code, links, rules, lists, and quotes. `[[Wikilinks]]` are kept. `content_rich` still takes precedence when sent.
+- **MCP `create_journal` / `update_journal`** — Accept the same `content_format` argument.
+- **Updated examples**: `journals.py` adds `get_journal_markdown` and `create_markdown_journal_entry`.
+
+### Changed
+
+- **`format=markdown` on journal GET** — Tables are now exported as GFM pipe tables (with column alignment and `\|`-escaped pipes) instead of `[TABLE]` text blocks, so exported Markdown round-trips through `content_format="markdown"`. Adjacent inline-code runs are merged into a single span.
+
+---
+
 ## [2026-09-02] — Ask quota, campaign search docs, session PUT, beat links, saved PDFs
 
 ### Added
