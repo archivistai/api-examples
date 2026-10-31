@@ -21,7 +21,7 @@ Code examples and usage patterns for the [Archivist AI](https://myarchivist.ai) 
 | [beats.py](examples/python/beats.py) | Python | Fetch nested session beat hierarchy |
 | [entities.py](examples/python/entities.py) | Python | Unified compendium entity picker |
 | [moments.py](examples/python/moments.py) | Python | Moment list filters and fields=card |
-| [journals.py](examples/python/journals.py) | Python | List journal entries with pagination and fields=card |
+| [journals.py](examples/python/journals.py) | Python | List journal entries with pagination and fields=card; Markdown export and `content_format="markdown"` create |
 | [ask.py](examples/python/ask.py) | Python | Ask quota plus RAG chat over campaign knowledge |
 | [search.py](examples/python/search.py) | Python | Unified campaign search (`GET /v1/campaigns/{id}/search`) |
 | [pagination.py](examples/python/pagination.py) | Python | Iterate standard and entities list envelopes |
