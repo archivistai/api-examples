@@ -105,7 +105,7 @@ graph TD
 ```
 """
     payload = {
-        "world_id": campaign_id,
+        "campaign_id": campaign_id,
         "title": "Session 12 recap (Markdown)",
         "content": content,
         "content_format": "markdown",  # default is "plain"
