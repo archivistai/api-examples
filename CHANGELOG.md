@@ -24,7 +24,7 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Changed
 
-- **`error_handling.py`** — The retry adapter no longer retries POST/PATCH on 5xx (a retried write can duplicate data); `write_with_verification` shows the re-read-then-retry pattern.
+- **`error_handling.py`** — The retry adapter no longer retries POST/PATCH on 5xx (a retried write can duplicate data); `write_with_verification` sends a write once and, on a timeout or 5xx, re-reads with backoff instead of resending (raising `WriteOutcomeUnknown` if the change never appears).
 
 ---
 

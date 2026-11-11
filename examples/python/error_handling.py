@@ -32,12 +32,20 @@ def create_session_with_retries():
     return session
 
 
-def write_with_verification(method: str, url: str, payload: dict, verify):
-    """Send a POST/PATCH once; on a timeout or 5xx, check before retrying.
+class WriteOutcomeUnknown(Exception):
+    """A POST/PATCH timed out or returned 5xx and the change is not visible yet."""
 
-    ``verify()`` should re-read the target (e.g. GET the record you patched,
-    or list the collection you appended to) and return True if the change is
-    already there.
+
+def write_with_verification(method: str, url: str, payload: dict, verify, checks: int = 4):
+    """Send a POST/PATCH exactly once; on a timeout or 5xx, find out what happened.
+
+    The request is never resent automatically. A timed-out write may still be
+    running on the server, so a read that doesn't see it yet does not prove it
+    failed; resending could make both requests commit. Instead, re-read a few
+    times with backoff via ``verify()`` (re-read the record you patched, or
+    list the collection you appended to; return True if the change is there).
+    If it never shows up, raise WriteOutcomeUnknown and let a person (or a
+    later reconciliation step) decide whether to send it again.
     """
     try:
         resp = requests.request(method, url, headers=HEADERS, json=payload, timeout=60)
@@ -45,10 +53,15 @@ def write_with_verification(method: str, url: str, payload: dict, verify):
             return resp
     except requests.Timeout:
         pass
-    if verify():
-        print("Write was applied despite the error; not retrying.")
-        return None
-    return requests.request(method, url, headers=HEADERS, json=payload, timeout=60)
+    for attempt in range(checks):
+        time.sleep(2 ** attempt)
+        if verify():
+            print("Write was applied despite the error.")
+            return None
+    raise WriteOutcomeUnknown(
+        f"{method} {url} did not confirm and the change is not visible yet; "
+        "check again later before sending it a second time."
+    )
 
 
 def handle_api_error(resp: requests.Response) -> None:
