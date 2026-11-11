@@ -76,6 +76,33 @@ def create_quest(campaign_id: str):
     return quest
 
 
+def edit_progress_entry(quest_id: str, entry_id: str, new_text: str, session_id: str | None = None):
+    """Fix the text of one progress-log entry without losing its session.
+
+    Send the whole list as objects with their ids: entries with an id keep
+    that id and their session (pass session_id to re-tag one); entries
+    without an id are new. Plain strings still work but are matched by text,
+    so an edited string would lose its original session.
+    """
+    quest = requests.get(f"{BASE_URL}/v1/quests/{quest_id}", headers=HEADERS).json()
+    entries = []
+    for entry in quest["progress_log_entries"]:
+        item = {"id": entry["id"], "text": entry["text"]}
+        if entry["id"] == entry_id:
+            item["text"] = new_text
+            if session_id:
+                item["session_id"] = session_id
+        entries.append(item)
+
+    resp = requests.patch(
+        f"{BASE_URL}/v1/quests/{quest_id}",
+        headers=HEADERS,
+        json={"progress_log": entries},
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+
 if __name__ == "__main__":
     campaign_id = os.environ.get("ARCHIVIST_CAMPAIGN_ID")
     if not campaign_id:

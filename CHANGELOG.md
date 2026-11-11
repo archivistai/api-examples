@@ -6,6 +6,28 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ---
 
+## [2026-11-11] — Properties and Character Arc for API/MCP clients, quest entry identity, PATCH timeouts
+
+### Added
+
+- **`GET /v1/entities/{id}/properties`** — Now available to API-key and agent (MCP) clients, not just first-party apps. Connection fields also return `connections: [{id, name, type}]` so references can be written back by id.
+- **`PATCH /v1/entities/{id}/properties`** — Partial update of a character's, faction's, location's or item's Properties: only the keys sent change. Connection fields take entity ids or exact names (replace), `[]`, or `{"add": [...], "remove": [...]}`. Unknown keys or unresolved references return 422 and nothing is written.
+- **Character Arc** — `GET /v1/characters/{id}/arc` is now public, with `status=approved|pending|all` and `session_id` filters; facets carry `status`, `run_id`, `replaces_id` and `previous_description`. New writes: `POST /v1/characters/{id}/arc/facets`, `PATCH`/`DELETE /v1/characters/{id}/arc/facets/{facet_id}` (same versioning as the web app) and `POST /v1/characters/{id}/arc/runs/{run_id}/review` (`approve` / `decline`).
+- **MCP** (server 3.1.0) — `with_properties` on `get_character` / `get_faction` / `get_location` / `get_item`; new tools `update_entity_properties`, `get_character_arc`, `create_character_arc_facet`, `update_character_arc_facet`, `delete_character_arc_facet`, `review_character_arc_run`.
+- **Examples** — `properties.py`, `character_arc.py`, `quests.py` `edit_progress_entry`; Properties and Character Arc types in `types.ts`.
+
+### Fixed
+
+- **`player_name`** — Resolved from the PC's assigned cast member (Speaker) as the web app does, so PCs assigned in the character drawer no longer return `null`. Agent (MCP) clients now receive `player_name` (display name only; no account fields).
+- **Quest progress entries** — Editing an entry's text through `update_quest` / `PATCH /v1/quests/{id}` keeps its id and session when entries are sent as `{id, text, session_id?}`; `session_id` is honoured. (The web app's quest editor got the same fix.)
+- **Slow PATCH on sessions, beats and moments** — The wikilink lookup on these routes scanned the whole Link table; under load it exceeded the MCP server's 30s timeout after the write had committed, so callers saw an error for a saved change. It now uses the index. MCP write tools that time out now say the change may have been applied and to re-read before retrying.
+
+### Changed
+
+- **`error_handling.py`** — The retry adapter no longer retries POST/PATCH on 5xx (a retried write can duplicate data); `write_with_verification` shows the re-read-then-retry pattern.
+
+---
+
 ## [2026-10-31] — Markdown content for journal entries
 
 ### Added

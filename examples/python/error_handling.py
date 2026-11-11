@@ -12,17 +12,43 @@ HEADERS = {"x-api-key": API_KEY}
 
 
 def create_session_with_retries():
-    """Create a requests session with automatic retry on transient failures."""
+    """Create a requests session with automatic retry on transient failures.
+
+    Only idempotent methods (GET, PUT, DELETE) are retried automatically.
+    POST and PATCH are never retried by the adapter: a 5xx or a timeout on a
+    write does NOT mean the write failed: the
+    API may have committed it after the connection dropped, and retrying
+    blindly can create a duplicate. See write_with_verification below.
+    """
     session = requests.Session()
-    retries = Retry(
+    idempotent = Retry(
         total=3,
         backoff_factor=1,
         status_forcelist=[429, 500, 502, 503, 504],
-        allowed_methods=["GET", "POST", "PATCH"],
+        allowed_methods=["GET", "PUT", "DELETE"],
     )
-    session.mount("https://", HTTPAdapter(max_retries=retries))
+    session.mount("https://", HTTPAdapter(max_retries=idempotent))
     session.headers.update(HEADERS)
     return session
+
+
+def write_with_verification(method: str, url: str, payload: dict, verify):
+    """Send a POST/PATCH once; on a timeout or 5xx, check before retrying.
+
+    ``verify()`` should re-read the target (e.g. GET the record you patched,
+    or list the collection you appended to) and return True if the change is
+    already there.
+    """
+    try:
+        resp = requests.request(method, url, headers=HEADERS, json=payload, timeout=60)
+        if resp.status_code < 500:
+            return resp
+    except requests.Timeout:
+        pass
+    if verify():
+        print("Write was applied despite the error; not retrying.")
+        return None
+    return requests.request(method, url, headers=HEADERS, json=payload, timeout=60)
 
 
 def handle_api_error(resp: requests.Response) -> None:
