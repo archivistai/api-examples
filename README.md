@@ -17,7 +17,9 @@ Code examples and usage patterns for the [Archivist AI](https://myarchivist.ai) 
 |---------|----------|-------------|
 | [quickstart.py](examples/python/quickstart.py) | Python | List campaigns, characters, and sessions |
 | [quickstart.ts](examples/typescript/quickstart.ts) | TypeScript | Same flow using fetch |
-| [quests.py](examples/python/quests.py) | Python | Create and manage quests |
+| [quests.py](examples/python/quests.py) | Python | Create and manage quests; edit a progress entry without losing its session |
+| [properties.py](examples/python/properties.py) | Python | Read and partially update structured Properties (including connection add/remove) |
+| [character_arc.py](examples/python/character_arc.py) | Python | List pending Character Arc changes, fix a facet, approve or decline a run |
 | [beats.py](examples/python/beats.py) | Python | Fetch nested session beat hierarchy |
 | [entities.py](examples/python/entities.py) | Python | Unified compendium entity picker |
 | [moments.py](examples/python/moments.py) | Python | Moment list filters and fields=card |

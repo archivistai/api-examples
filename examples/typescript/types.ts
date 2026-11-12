@@ -247,6 +247,13 @@ export interface QuestObjective {
   order: number;
 }
 
+/** Write shape for PATCH /v1/quests/{id} progress_log entries (ids keep identity and session). */
+export interface QuestProgressEntryInput {
+  id?: ID;
+  text: string;
+  session_id?: ID | null;
+}
+
 export interface QuestProgressEntry {
   id: ID;
   text: string;
@@ -532,4 +539,73 @@ export interface CampaignSearchResponse {
   recaps: Array<CampaignSearchHit & { title: string; session_number?: number; summary?: string }>;
   quests: Array<{ id: ID; questName: string; status?: string | null }>;
   journals: Array<CampaignSearchHit & { title: string }>;
+}
+
+// ---------------------------------------------------------------------------
+// Properties (GET/PATCH /v1/entities/{id}/properties)
+// ---------------------------------------------------------------------------
+
+export type PropertyFieldType =
+  | "STRING" | "NUMBER" | "BOOLEAN" | "ENUM" | "MULTISELECT"
+  | "CONNECTION" | "MULTISELECT_CONNECTION" | "JSON";
+export type ConnectionType = "CHARACTER" | "FACTION" | "LOCATION" | "ITEM";
+
+export interface PropertyConnectionRef {
+  id: ID;
+  name?: string | null;
+  type?: ConnectionType | null;
+}
+
+export interface PropertyField {
+  id: ID;
+  key: string;
+  label: string;
+  description?: string | null;
+  field_type: PropertyFieldType;
+  is_required: boolean;
+  sort_order: number;
+  options?: string[] | null;
+  connection_types: ConnectionType[];
+  value: unknown;
+  connections?: PropertyConnectionRef[] | null;
+  updated_at?: ISODate | null;
+}
+
+export interface EntityProperties {
+  entity_id: ID;
+  entity_type: "Character" | "Faction" | "Location" | "Item";
+  compendium_entity_type?: "PC" | "NPC" | "CREATURE" | "FACTION" | "LOCATION" | "ITEM" | null;
+  tables: { table_type: "IDENTITY" | "CONNECTION" | "GENERAL"; label: string; fields: PropertyField[] }[];
+}
+
+/** PATCH body: connection fields take ids/names (replace), [] to clear, or { add, remove }. */
+export interface EntityPropertiesUpdate {
+  properties: Record<string, unknown | ID[] | { add?: ID[]; remove?: ID[] }>;
+}
+
+// ---------------------------------------------------------------------------
+// Character Arc (GET /v1/characters/{id}/arc)
+// ---------------------------------------------------------------------------
+
+export interface CharacterArcFacet {
+  id: ID;
+  title?: string | null;
+  description: string;
+  session_id?: ID | null;
+  session_number?: number | null;
+  version_count: number;
+  hidden: boolean;
+  status: "approved" | "pending";
+  run_id?: string | null;
+  source?: string | null;
+  replaces_id?: ID | null;
+  previous_title?: string | null;
+  previous_description?: string | null;
+  created_at?: ISODate | null;
+  updated_at?: ISODate | null;
+}
+
+export interface CharacterArc {
+  character_id: ID;
+  themes: { id: ID; key?: string | null; title: string; description?: string | null; facets: CharacterArcFacet[] }[];
 }
