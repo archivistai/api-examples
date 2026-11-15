@@ -11,7 +11,7 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Clarified
 
 - Creatures are Character records with `type: "Creature"`; use `/v1/characters` for CRUD and `character_type=Creature` for lists, including lists with `search`.
-- Creature links and images use the canonical `Character` entity type and record ID.
+- Creature links and image uploads use the Character record ID; links use `Character` for `from_type` or `to_type`, while image uploads use lowercase `character` for `entity_type`.
 
 ---
 

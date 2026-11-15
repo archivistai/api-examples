@@ -45,7 +45,8 @@ curl -H "x-api-key: $ARCHIVIST_API_KEY" \
 
 Use `POST /v1/characters` with `"type": "Creature"` to create one, and the
 ordinary `/v1/characters/{id}` routes to read, update, or delete it. Links and
-image uploads continue to use the canonical `Character` entity type and ID.
+image uploads use the Character record ID. Set link `from_type` or `to_type` to
+`Character`, and image-upload `entity_type` to lowercase `character`.
 
 ## API Base URL
 
