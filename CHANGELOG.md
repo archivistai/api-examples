@@ -6,6 +6,15 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ---
 
+## [2026-11-15] — Creature API documentation
+
+### Clarified
+
+- Creatures are Character records with `type: "Creature"`; use `/v1/characters` for CRUD and `character_type=Creature` for lists, including lists with `search`.
+- Creature links and images use the canonical `Character` entity type and record ID.
+
+---
+
 ## [2026-11-11] — Properties and Character Arc for API/MCP clients, quest entry identity, PATCH timeouts
 
 ### Added
