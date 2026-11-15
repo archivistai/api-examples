@@ -32,6 +32,21 @@ Code examples and usage patterns for the [Archivist AI](https://myarchivist.ai) 
 | [types.ts](examples/typescript/types.ts) | TypeScript | Importable response type definitions |
 | [curl/basics.sh](examples/curl/basics.sh) | cURL | Common operations as shell commands |
 
+## Creature records
+
+Creatures use the Character resource with `type: "Creature"`; there is no separate
+Creature CRUD endpoint. List only Creatures with `character_type=Creature`, and
+combine it with `search` to search within that subtype before pagination:
+
+```bash
+curl -H "x-api-key: $ARCHIVIST_API_KEY" \
+  "https://api.myarchivist.ai/v1/characters?campaign_id=$CAMPAIGN_ID&character_type=Creature&search=owlbear"
+```
+
+Use `POST /v1/characters` with `"type": "Creature"` to create one, and the
+ordinary `/v1/characters/{id}` routes to read, update, or delete it. Links and
+image uploads continue to use the canonical `Character` entity type and ID.
+
 ## API Base URL
 
 ```
